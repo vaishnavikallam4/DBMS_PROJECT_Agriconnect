@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Log in — AgriConnect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="auth-shell">
+    <div class="auth-card">
+      <div class="auth-brand"><div class="mark"></div><span>AgriConnect</span></div>
+      <h1 style="font-size:1.5rem;">Welcome back</h1>
+      <p>Log in to your farmer or seller account.</p>
+
+      <div class="error-banner" id="error-banner"></div>
+
+      <form id="login-form">
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" id="email" required autocomplete="email">
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input type="password" id="password" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn btn-block" id="submit-btn">Log in</button>
+      </form>
+
+      <p class="auth-foot">New to AgriConnect? <a href="register.html">Create an account</a></p>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script>
+    // If already logged in, skip straight to the right dashboard.
+    (function () {
+      const user = getUser();
+      if (getToken() && user) {
+        window.location.href = user.role === "farmer" ? "farmer-dashboard.html" : "seller-dashboard.html";
+      }
+    })();
+
+    const form = document.getElementById("login-form");
+    const errorBanner = document.getElementById("error-banner");
+    const submitBtn = document.getElementById("submit-btn");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      errorBanner.classList.remove("show");
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Logging in…";
+      try {
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+        const data = await apiRequest("POST", "/auth/login", { email, password });
+        setSession(data.token, data.user);
+        window.location.href = data.user.role === "farmer" ? "farmer-dashboard.html" : "seller-dashboard.html";
+      } catch (err) {
+        if (err.offline) {
+          errorBanner.textContent = "You're offline, and logging in for the first time needs a connection. Reconnect and try again.";
+        } else {
+          errorBanner.textContent = err.message || "Login failed.";
+        }
+        if (err.serverUnreachable) errorBanner.style.whiteSpace = "pre-wrap";
+        errorBanner.classList.add("show");
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Log in";
+      }
+    });
+  </script>
+</body>
+</html>

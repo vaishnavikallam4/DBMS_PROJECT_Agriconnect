@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Farmer Dashboard — AgriConnect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="auth-brand"><div class="mark"></div><span>AgriConnect</span></div>
+
+      <nav class="nav-group">
+        <div class="nav-label">FARMER MENU</div>
+        <button class="nav-link active" data-section="overview"><span class="dot"></span>Overview</button>
+        <button class="nav-link" data-section="mycrops"><span class="dot"></span>My Crops</button>
+        <button class="nav-link" data-section="planner"><span class="dot"></span>Crop Planner</button>
+        <button class="nav-link" data-section="crops"><span class="dot"></span>Crop Advisory</button>
+        <button class="nav-link" data-section="soil"><span class="dot"></span>Soil &amp; Fertilizer</button>
+        <button class="nav-link" data-section="expenses"><span class="dot"></span>Expenses</button>
+        <button class="nav-link" data-section="profitcalc"><span class="dot"></span>Profit Calculator</button>
+        <button class="nav-link" data-section="analytics"><span class="dot"></span>Farm Analytics</button>
+        <button class="nav-link" data-section="prices"><span class="dot"></span>Market Prices</button>
+        <button class="nav-link" data-section="nearbymarkets"><span class="dot"></span>Nearby Markets</button>
+        <button class="nav-link" data-section="marketplace"><span class="dot"></span>Sell Produce</button>
+        <button class="nav-link" data-section="inventory"><span class="dot"></span>Farm Inventory</button>
+        <button class="nav-link" data-section="sold"><span class="dot"></span>Orders Received</button>
+        <button class="nav-link" data-section="messages"><span class="dot"></span>Messages</button>
+        <button class="nav-link" data-section="weather"><span class="dot"></span>Weather</button>
+        <button class="nav-link" data-section="notifications"><span class="dot"></span>Notifications <span class="badge" id="notif-count-badge" style="display:none;"></span></button>
+        <button class="nav-link" data-section="profile"><span class="dot"></span>Profile</button>
+      </nav>
+
+      <div class="sidebar-foot">
+        <div class="user-chip">
+          <div class="avatar" id="avatar-initial">F</div>
+          <div class="who"><strong id="chip-name">—</strong><small>Farmer</small></div>
+        </div>
+        <button class="btn btn-outline btn-block" id="logout-btn">Log out</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="status-bar" id="status-bar"></div>
+
+      <!-- OVERVIEW -->
+      <section class="section active" id="section-overview">
+        <div class="topbar"><div><h1>Welcome, <span id="overview-name">Farmer</span></h1><p>Here's how your farm business looks today.</p></div></div>
+        <div class="grid grid-3">
+          <div class="stat-card"><div class="label">Active listings</div><div class="value" id="stat-listings">—</div></div>
+          <div class="stat-card leaf"><div class="label">Total sold (all time)</div><div class="value" id="stat-sold">—</div></div>
+          <div class="stat-card rust"><div class="label">Expenses this month</div><div class="value" id="stat-expenses">—</div></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Quick actions</h3></div>
+          <div class="flex-gap">
+            <button class="btn" data-goto="marketplace">+ List produce for sale</button>
+            <button class="btn btn-outline" data-goto="expenses">+ Log an expense</button>
+            <button class="btn btn-outline" data-goto="mycrops">+ Add a crop</button>
+            <button class="btn btn-outline" data-goto="crops">Look up a crop</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- MY CROPS -->
+      <section class="section" id="section-mycrops">
+        <div class="topbar">
+          <div><h1>My Crops</h1><p>What's currently growing on your farm.</p></div>
+          <button class="btn" id="add-mycrop-btn">+ Add crop</button>
+        </div>
+        <div class="card"><div id="mycrops-list"><p class="text-faint">Loading…</p></div></div>
+      </section>
+
+      <!-- CROP PLANNER -->
+      <section class="section" id="section-planner">
+        <div class="topbar">
+          <div><h1>Crop Planner</h1><p>What's planned ahead, and how soon your active crops need to be harvested.</p></div>
+          <button class="btn" id="add-planned-btn">+ Plan a crop</button>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Planned</h3></div>
+          <div id="planner-planned"><p class="text-faint">Loading…</p></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Upcoming harvests</h3></div>
+          <div id="planner-upcoming"><p class="text-faint">Loading…</p></div>
+        </div>
+      </section>
+
+      <!-- CROP ADVISORY -->
+      <section class="section" id="section-crops">
+        <div class="topbar"><div><h1>Crop Advisory</h1><p>Search any crop for full guidance from seeding to selling.</p></div></div>
+        <div class="crop-search">
+          <input type="text" id="crop-search-input" placeholder="Search a crop, e.g. Tomato, Rice, Onion…">
+          <button class="btn" id="crop-search-btn">Search</button>
+        </div>
+        <div id="crop-suggestions"></div>
+        <div id="crop-result"></div>
+      </section>
+
+      <!-- SOIL & FERTILIZER -->
+      <section class="section" id="section-soil">
+        <div class="topbar"><div><h1>Soil &amp; Fertilizer</h1><p>Log soil test readings and get crop-specific fertilizer guidance.</p></div></div>
+        <div class="card">
+          <div class="card-head"><h3>Fertilizer recommendation</h3></div>
+          <div class="crop-search">
+            <input type="text" id="soil-crop-input" placeholder="Enter a crop name…">
+            <button class="btn" id="soil-recommend-btn">Get recommendation</button>
+          </div>
+          <div id="soil-recommend-result"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Soil test log</h3><button class="btn btn-sm" id="add-soil-btn">+ Log reading</button></div>
+          <div id="soil-list"><p class="text-faint">Loading…</p></div>
+        </div>
+      </section>
+
+      <!-- EXPENSES -->
+      <section class="section" id="section-expenses">
+        <div class="topbar">
+          <div><h1>Expenses</h1><p>Track what you spend on each crop, even offline.</p></div>
+          <button class="btn" id="add-expense-btn">+ Add expense</button>
+        </div>
+        <div class="card"><div id="expenses-list"><p class="text-faint">Loading…</p></div></div>
+      </section>
+
+      <!-- PROFIT CALCULATOR -->
+      <section class="section" id="section-profitcalc">
+        <div class="topbar"><div><h1>Profit Calculator</h1><p>See profit and break-even point for a crop, from your own expenses and sales.</p></div></div>
+        <div class="card">
+          <div class="field-row">
+            <div class="field"><label>Crop</label><input type="text" id="profit-crop-input" placeholder="e.g. Tomato"></div>
+            <div class="field"><label>Override price per unit (optional, ₹)</label><input type="number" id="profit-price-input" min="0" step="0.01"></div>
+          </div>
+          <button class="btn" id="profit-calc-btn">Calculate</button>
+        </div>
+        <div id="profit-result"></div>
+      </section>
+
+      <!-- FARM ANALYTICS -->
+      <section class="section" id="section-analytics">
+        <div class="topbar"><div><h1>Farm Analytics</h1><p>A birds-eye view of spending and sales.</p></div></div>
+        <div class="grid grid-3">
+          <div class="stat-card"><div class="label">Total expenses</div><div class="value" id="an-total-expenses">—</div></div>
+          <div class="stat-card leaf"><div class="label">Total revenue</div><div class="value" id="an-total-revenue">—</div></div>
+          <div class="stat-card rust"><div class="label">Net profit</div><div class="value" id="an-total-profit">—</div></div>
+        </div>
+        <div class="grid grid-2">
+          <div class="card"><div class="card-head"><h3>Expenses by category</h3></div><div id="an-expense-cat"></div></div>
+          <div class="card"><div class="card-head"><h3>Revenue by crop</h3></div><div id="an-revenue-crop"></div></div>
+        </div>
+        <div class="card"><div class="card-head"><h3>Monthly trend</h3></div><div id="an-monthly"></div></div>
+      </section>
+
+      <!-- MARKET PRICES -->
+      <section class="section" id="section-prices">
+        <div class="topbar"><div><h1>Market Prices</h1><p>Latest prices reported across nearby markets.</p></div></div>
+        <div class="card"><div id="prices-table-wrap"><p class="text-faint">Loading prices…</p></div></div>
+      </section>
+
+      <!-- NEARBY MARKETS -->
+      <section class="section" id="section-nearbymarkets">
+        <div class="topbar"><div><h1>Nearby Markets</h1><p>Mandis and marketplaces you can sell through.</p></div></div>
+        <div id="nearby-markets-list"><p class="text-faint">Loading…</p></div>
+      </section>
+
+      <!-- MARKETPLACE (farmer's own listings) -->
+      <section class="section" id="section-marketplace">
+        <div class="topbar">
+          <div><h1>Sell Produce</h1><p>List crops for sale — buyers see these in their marketplace instantly.</p></div>
+          <button class="btn" id="add-listing-btn">+ New listing</button>
+        </div>
+        <div class="card"><div id="listings-list"><p class="text-faint">Loading…</p></div></div>
+      </section>
+
+      <!-- FARM INVENTORY -->
+      <section class="section" id="section-inventory">
+        <div class="topbar">
+          <div><h1>Farm Inventory</h1><p>Seeds, fertilizer and supplies on hand — with low-stock alerts.</p></div>
+          <button class="btn" id="add-inventory-btn">+ Add item</button>
+        </div>
+        <div class="card"><div id="inventory-list"><p class="text-faint">Loading…</p></div></div>
+      </section>
+
+      <!-- ORDERS RECEIVED -->
+      <section class="section" id="section-sold">
+        <div class="topbar"><div><h1>Orders Received</h1><p>Purchases buyers have made from your listings — update status as you fulfill them.</p></div></div>
+        <div class="card"><div id="sold-list"><p class="text-faint">Loading…</p></div></div>
+      </section>
+
+      <!-- MESSAGES -->
+      <section class="section" id="section-messages">
+        <div class="topbar"><div><h1>Messages</h1><p>Conversations with buyers about your listings.</p></div></div>
+        <div class="grid grid-2">
+          <div class="card"><div class="card-head"><h3>Conversations</h3></div><div class="thread-list" id="thread-list"><p class="text-faint">Loading…</p></div></div>
+          <div class="card" id="chat-card" style="display:none;">
+            <div class="card-head"><h3 id="chat-title">Conversation</h3></div>
+            <div class="chat-window" id="chat-window"></div>
+            <form id="chat-form" class="flex-gap">
+              <input type="text" id="chat-input" placeholder="Type a reply…" style="flex:1;" required>
+              <button type="submit" class="btn btn-sm">Send</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- WEATHER -->
+      <section class="section" id="section-weather">
+        <div class="topbar"><div><h1>Weather &amp; Farm Conditions</h1><p>Live forecast for your farm's location.</p></div></div>
+        <div class="card">
+          <div class="crop-search">
+            <input type="text" id="weather-location-input" placeholder="Village/town (defaults to your profile location)">
+            <button class="btn" id="weather-refresh-btn">Check</button>
+          </div>
+          <div id="weather-result"><p class="text-faint">Loading…</p></div>
+        </div>
+      </section>
+
+      <!-- NOTIFICATIONS -->
+      <section class="section" id="section-notifications">
+        <div class="topbar">
+          <div><h1>Notifications</h1><p>Orders, messages, reviews and low-stock alerts.</p></div>
+          <button class="btn btn-outline" id="mark-all-read-btn">Mark all read</button>
+        </div>
+        <div class="card"><div id="notifications-list"><p class="text-faint">Loading…</p></div></div>
+      </section>
+
+      <!-- PROFILE -->
+      <section class="section" id="section-profile">
+        <div class="topbar"><div><h1>Profile</h1><p>Your account details.</p></div></div>
+        <div class="card" style="max-width:480px;">
+          <div class="error-banner" id="profile-error"></div>
+          <div class="info-banner" id="profile-info"></div>
+          <form id="profile-form">
+            <div class="field"><label>Email</label><input type="email" id="profile-email" disabled></div>
+            <div class="field"><label>Full name</label><input type="text" id="profile-name" required></div>
+            <div class="field"><label>Phone</label><input type="tel" id="profile-phone"></div>
+            <div class="field"><label>Village / Town</label><input type="text" id="profile-location"></div>
+            <button type="submit" class="btn">Save changes</button>
+          </form>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Add expense modal -->
+  <div class="modal-backdrop" id="expense-modal">
+    <div class="modal">
+      <h3>Add expense</h3>
+      <form id="expense-form">
+        <div class="field"><label>Item / activity</label><input type="text" id="exp-item" required placeholder="e.g. Urea fertilizer"></div>
+        <div class="field-row">
+          <div class="field"><label>Category</label>
+            <select id="exp-category">
+              <option value="seeds">Seeds</option>
+              <option value="fertilizer">Fertilizer</option>
+              <option value="pesticide">Pesticide</option>
+              <option value="labor">Labor</option>
+              <option value="equipment">Equipment</option>
+              <option value="irrigation">Irrigation</option>
+              <option value="transport">Transport</option>
+              <option value="general" selected>Other</option>
+            </select>
+          </div>
+          <div class="field"><label>Amount (₹)</label><input type="number" id="exp-amount" required min="0" step="0.01"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Date</label><input type="date" id="exp-date"></div>
+          <div class="field"><label>Crop (optional)</label><input type="text" id="exp-crop" placeholder="e.g. Tomato"></div>
+        </div>
+        <div class="field"><label>Notes (optional)</label><textarea id="exp-notes"></textarea></div>
+        <div class="flex-gap">
+          <button type="submit" class="btn">Save expense</button>
+          <button type="button" class="btn btn-outline" id="expense-cancel">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add listing modal -->
+  <div class="modal-backdrop" id="listing-modal">
+    <div class="modal">
+      <h3>List produce for sale</h3>
+      <form id="listing-form">
+        <div class="field"><label>Crop name</label><input type="text" id="lst-crop" required placeholder="e.g. Tomato"></div>
+        <div class="field-row">
+          <div class="field"><label>Quantity</label><input type="number" id="lst-qty" required min="0.1" step="0.1"></div>
+          <div class="field"><label>Unit</label>
+            <select id="lst-unit">
+              <option value="kg" selected>kg</option>
+              <option value="quintal">quintal</option>
+              <option value="ton">ton</option>
+              <option value="dozen">dozen</option>
+            </select>
+          </div>
+        </div>
+        <div class="field"><label>Price per unit (₹)</label><input type="number" id="lst-price" required min="0" step="0.01"></div>
+        <div class="field"><label>Description (optional)</label><textarea id="lst-desc" placeholder="Quality, harvest date, pickup details…"></textarea></div>
+        <div class="flex-gap">
+          <button type="submit" class="btn">Publish listing</button>
+          <button type="button" class="btn btn-outline" id="listing-cancel">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- My Crops / Planner modal (shared) -->
+  <div class="modal-backdrop" id="mycrop-modal">
+    <div class="modal">
+      <h3 id="mycrop-modal-title">Add crop</h3>
+      <form id="mycrop-form">
+        <input type="hidden" id="mycrop-status-field" value="active">
+        <div class="field"><label>Crop name</label><input type="text" id="mc-crop" required placeholder="e.g. Tomato"></div>
+        <div class="field-row">
+          <div class="field"><label>Area</label><input type="number" id="mc-area" min="0" step="0.1"></div>
+          <div class="field"><label>Unit</label>
+            <select id="mc-area-unit"><option value="acre" selected>acre</option><option value="hectare">hectare</option><option value="guntha">guntha</option></select>
+          </div>
+        </div>
+        <div class="field"><label id="mc-date-label">Planted date</label><input type="date" id="mc-planted-date" required></div>
+        <div class="field"><label>Notes (optional)</label><textarea id="mc-notes"></textarea></div>
+        <div class="flex-gap">
+          <button type="submit" class="btn">Save</button>
+          <button type="button" class="btn btn-outline" id="mycrop-cancel">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Soil record modal -->
+  <div class="modal-backdrop" id="soil-modal">
+    <div class="modal">
+      <h3>Log soil reading</h3>
+      <form id="soil-form">
+        <div class="field"><label>Crop (optional)</label><input type="text" id="soil-crop"></div>
+        <div class="field-row">
+          <div class="field"><label>Soil type</label><input type="text" id="soil-type" placeholder="e.g. Loamy"></div>
+          <div class="field"><label>pH</label><input type="number" id="soil-ph" min="0" max="14" step="0.1"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Nitrogen (N)</label><input type="text" id="soil-n" placeholder="Low/Medium/High"></div>
+          <div class="field"><label>Phosphorus (P)</label><input type="text" id="soil-p" placeholder="Low/Medium/High"></div>
+          <div class="field"><label>Potassium (K)</label><input type="text" id="soil-k" placeholder="Low/Medium/High"></div>
+        </div>
+        <div class="field"><label>Notes</label><textarea id="soil-notes"></textarea></div>
+        <div class="flex-gap">
+          <button type="submit" class="btn">Save reading</button>
+          <button type="button" class="btn btn-outline" id="soil-cancel">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Inventory modal -->
+  <div class="modal-backdrop" id="inventory-modal">
+    <div class="modal">
+      <h3>Add inventory item</h3>
+      <form id="inventory-form">
+        <div class="field"><label>Item name</label><input type="text" id="inv-name" required placeholder="e.g. Urea, DAP, Seeds"></div>
+        <div class="field-row">
+          <div class="field"><label>Category</label>
+            <select id="inv-category">
+              <option value="seed">Seed</option><option value="fertilizer">Fertilizer</option>
+              <option value="pesticide">Pesticide</option><option value="tool">Tool</option>
+              <option value="general" selected>General</option>
+            </select>
+          </div>
+          <div class="field"><label>Unit</label>
+            <select id="inv-unit"><option value="kg" selected>kg</option><option value="litre">litre</option><option value="bag">bag</option><option value="unit">unit</option></select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Quantity on hand</label><input type="number" id="inv-qty" required min="0" step="0.1"></div>
+          <div class="field"><label>Low-stock alert below</label><input type="number" id="inv-threshold" min="0" step="0.1" value="0"></div>
+        </div>
+        <div class="flex-gap">
+          <button type="submit" class="btn">Save item</button>
+          <button type="button" class="btn btn-outline" id="inventory-cancel">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/farmer.js"></script>
+  <script src="js/farmer-features.js"></script>
+</body>
+</html>

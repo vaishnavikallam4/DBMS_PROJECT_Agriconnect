@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create account — AgriConnect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="auth-shell">
+    <div class="auth-card">
+      <div class="auth-brand"><div class="mark"></div><span>AgriConnect</span></div>
+      <h1 style="font-size:1.5rem;">Create your account</h1>
+      <p>Tell us who you are so we can set up the right dashboard.</p>
+
+      <div class="error-banner" id="error-banner"></div>
+
+      <form id="register-form">
+        <div class="role-toggle">
+          <div class="role-option active" data-role="farmer">
+            <strong>🌾 Farmer</strong>
+            <small>Track expenses, get crop advice, sell produce</small>
+          </div>
+          <div class="role-option" data-role="seller">
+            <strong>🛒 Seller</strong>
+            <small>Browse the marketplace, buy fresh produce</small>
+          </div>
+        </div>
+        <input type="hidden" id="role" value="farmer">
+
+        <div class="field">
+          <label for="name">Full name</label>
+          <input type="text" id="name" required autocomplete="name">
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" id="email" required autocomplete="email">
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="phone">Phone (optional)</label>
+            <input type="tel" id="phone" autocomplete="tel">
+          </div>
+          <div class="field">
+            <label for="location">Village / Town (optional)</label>
+            <input type="text" id="location">
+          </div>
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input type="password" id="password" required minlength="6" autocomplete="new-password">
+        </div>
+        <button type="submit" class="btn btn-block" id="submit-btn">Create account</button>
+      </form>
+
+      <p class="auth-foot">Already have an account? <a href="login.html">Log in</a></p>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script>
+    (function () {
+      if (getToken() && getUser()) {
+        const user = getUser();
+        window.location.href = user.role === "farmer" ? "farmer-dashboard.html" : "seller-dashboard.html";
+      }
+    })();
+
+    document.querySelectorAll(".role-option").forEach((el) => {
+      el.addEventListener("click", () => {
+        document.querySelectorAll(".role-option").forEach((o) => o.classList.remove("active"));
+        el.classList.add("active");
+        document.getElementById("role").value = el.dataset.role;
+      });
+    });
+
+    const form = document.getElementById("register-form");
+    const errorBanner = document.getElementById("error-banner");
+    const submitBtn = document.getElementById("submit-btn");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      errorBanner.classList.remove("show");
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Creating account…";
+      try {
+        const payload = {
+          name: document.getElementById("name").value.trim(),
+          email: document.getElementById("email").value.trim(),
+          password: document.getElementById("password").value,
+          role: document.getElementById("role").value,
+          phone: document.getElementById("phone").value.trim(),
+          location: document.getElementById("location").value.trim(),
+        };
+        const data = await apiRequest("POST", "/auth/register", payload);
+        setSession(data.token, data.user);
+        window.location.href = data.user.role === "farmer" ? "farmer-dashboard.html" : "seller-dashboard.html";
+      } catch (err) {
+        errorBanner.textContent = err.offline
+          ? "You're offline. Registering for the first time needs a connection — try again once you're back online."
+          : (err.message || "Could not create your account.");
+        errorBanner.classList.add("show");
+        if (err.serverUnreachable) errorBanner.style.whiteSpace = "pre-wrap";
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Create account";
+      }
+    });
+  </script>
+</body>
+</html>

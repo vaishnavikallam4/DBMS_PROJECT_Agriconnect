@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seller Dashboard — AgriConnect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="auth-brand"><div class="mark"></div><span>AgriConnect</span></div>
+
+      <nav class="nav-group">
+        <div class="nav-label">SELLER MENU</div>
+        <button class="nav-link active" data-section="overview"><span class="dot"></span>Overview</button>
+        <button class="nav-link" data-section="marketplace"><span class="dot"></span>Browse Produce</button>
+        <button class="nav-link" data-section="saved"><span class="dot"></span>Saved Items</button>
+        <button class="nav-link" data-section="purchases"><span class="dot"></span>My Purchases</button>
+        <button class="nav-link" data-section="tracking"><span class="dot"></span>Order Tracking</button>
+        <button class="nav-link" data-section="purchaseanalytics"><span class="dot"></span>Purchase Analytics</button>
+        <button class="nav-link" data-section="compare"><span class="dot"></span>Price Comparison</button>
+        <button class="nav-link" data-section="nearbyfarmers"><span class="dot"></span>Nearby Farmers</button>
+        <button class="nav-link" data-section="prices"><span class="dot"></span>Market Prices</button>
+        <button class="nav-link" data-section="messages"><span class="dot"></span>Messages</button>
+        <button class="nav-link" data-section="reviews"><span class="dot"></span>My Reviews</button>
+        <button class="nav-link" data-section="notifications"><span class="dot"></span>Notifications <span class="badge" id="notif-count-badge" style="display:none;"></span></button>
+        <button class="nav-link" data-section="profile"><span class="dot"></span>Profile</button>
+      </nav>
+
+      <div class="sidebar-foot">
+        <div class="user-chip">
+          <div class="avatar" id="avatar-initial">S</div>
+          <div class="who"><strong id="chip-name">—</strong><small>Seller</small></div>
+        </div>
+        <button class="btn btn-outline btn-block" id="logout-btn">Log out</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="status-bar" id="status-bar"></div>
+
+      <!-- OVERVIEW -->
+      <section class="section active" id="section-overview">
+        <div class="topbar"><div><h1>Welcome, <span id="overview-name">Seller</span></h1><p>A quick look at your marketplace activity.</p></div></div>
+        <div class="grid grid-3">
+          <div class="stat-card"><div class="label">Listings available</div><div class="value" id="stat-available">—</div></div>
+          <div class="stat-card leaf"><div class="label">Products bought</div><div class="value" id="stat-bought">—</div></div>
+          <div class="stat-card rust"><div class="label">Total spent</div><div class="value" id="stat-spent">—</div></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Quick actions</h3></div>
+          <div class="flex-gap">
+            <button class="btn" data-goto="marketplace">Browse marketplace</button>
+            <button class="btn btn-outline" data-goto="purchases">View my purchases</button>
+            <button class="btn btn-outline" data-goto="compare">Compare prices</button>
+            <button class="btn btn-outline" data-goto="nearbyfarmers">Find nearby farmers</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- MARKETPLACE -->
+      <section class="section" id="section-marketplace">
+        <div class="topbar"><div><h1>Browse Produce</h1><p>Fresh produce listed directly by farmers.</p></div></div>
+        <div class="field" style="max-width:340px;"><input type="text" id="market-search" placeholder="Filter by crop name…"></div>
+        <div id="marketplace-list"><p class="text-faint">Loading listings…</p></div>
+      </section>
+
+      <!-- SAVED ITEMS -->
+      <section class="section" id="section-saved">
+        <div class="topbar"><div><h1>Saved Items</h1><p>Listings you've bookmarked for later.</p></div></div>
+        <div id="saved-list"><p class="text-faint">Loading…</p></div>
+      </section>
+
+      <!-- PURCHASES -->
+      <section class="section" id="section-purchases">
+        <div class="topbar"><div><h1>My Purchases</h1><p>Your order history.</p></div></div>
+        <div class="card"><div id="purchases-list"><p class="text-faint">Loading…</p></div></div>
+      </section>
+
+      <!-- ORDER TRACKING -->
+      <section class="section" id="section-tracking">
+        <div class="topbar"><div><h1>Order Tracking</h1><p>Where each order stands, from confirmed to delivered.</p></div></div>
+        <div id="tracking-list"><p class="text-faint">Loading…</p></div>
+      </section>
+
+      <!-- PURCHASE ANALYTICS -->
+      <section class="section" id="section-purchaseanalytics">
+        <div class="topbar"><div><h1>Purchase Analytics</h1><p>How much you've spent, and on what.</p></div></div>
+        <div class="grid grid-3">
+          <div class="stat-card"><div class="label">Total spent</div><div class="value" id="pa-total-spent">—</div></div>
+          <div class="stat-card leaf"><div class="label">Orders placed</div><div class="value" id="pa-order-count">—</div></div>
+          <div class="stat-card rust"><div class="label">Average order</div><div class="value" id="pa-avg-order">—</div></div>
+        </div>
+        <div class="card"><div class="card-head"><h3>Spend by crop</h3></div><div id="pa-by-crop"></div></div>
+        <div class="card"><div class="card-head"><h3>Spend by month</h3></div><div id="pa-by-month"></div></div>
+      </section>
+
+      <!-- PRICE COMPARISON -->
+      <section class="section" id="section-compare">
+        <div class="topbar"><div><h1>Price Comparison</h1><p>Compare what every farmer is charging for a crop right now.</p></div></div>
+        <div class="crop-search">
+          <input type="text" id="compare-input" placeholder="e.g. Tomato">
+          <button class="btn" id="compare-btn">Compare</button>
+        </div>
+        <div id="compare-result"></div>
+      </section>
+
+      <!-- NEARBY FARMERS -->
+      <section class="section" id="section-nearbyfarmers">
+        <div class="topbar"><div><h1>Nearby Farmers</h1><p>Farmers on AgriConnect, with their ratings and active listings.</p></div></div>
+        <div id="nearby-farmers-list"><p class="text-faint">Loading…</p></div>
+      </section>
+
+      <!-- MARKET PRICES -->
+      <section class="section" id="section-prices">
+        <div class="topbar"><div><h1>Market Prices</h1><p>Latest prices reported across nearby markets.</p></div></div>
+        <div class="card"><div id="prices-table-wrap"><p class="text-faint">Loading prices…</p></div></div>
+      </section>
+
+      <!-- MESSAGES -->
+      <section class="section" id="section-messages">
+        <div class="topbar"><div><h1>Messages</h1><p>Conversations with farmers about their listings.</p></div></div>
+        <div class="grid grid-2">
+          <div class="card"><div class="card-head"><h3>Conversations</h3></div><div class="thread-list" id="thread-list"><p class="text-faint">Loading…</p></div></div>
+          <div class="card" id="chat-card" style="display:none;">
+            <div class="card-head"><h3 id="chat-title">Conversation</h3></div>
+            <div class="chat-window" id="chat-window"></div>
+            <form id="chat-form" class="flex-gap">
+              <input type="text" id="chat-input" placeholder="Type a message…" style="flex:1;" required>
+              <button type="submit" class="btn btn-sm">Send</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- MY REVIEWS -->
+      <section class="section" id="section-reviews">
+        <div class="topbar"><div><h1>My Reviews</h1><p>Ratings you've left for farmers after a purchase.</p></div></div>
+        <div class="card"><div id="reviews-list"><p class="text-faint">Loading…</p></div></div>
+      </section>
+
+      <!-- NOTIFICATIONS -->
+      <section class="section" id="section-notifications">
+        <div class="topbar">
+          <div><h1>Notifications</h1><p>Order updates and messages.</p></div>
+          <button class="btn btn-outline" id="mark-all-read-btn">Mark all read</button>
+        </div>
+        <div class="card"><div id="notifications-list"><p class="text-faint">Loading…</p></div></div>
+      </section>
+
+      <!-- PROFILE -->
+      <section class="section" id="section-profile">
+        <div class="topbar"><div><h1>Profile</h1><p>Your account details.</p></div></div>
+        <div class="card" style="max-width:480px;">
+          <div class="error-banner" id="profile-error"></div>
+          <div class="info-banner" id="profile-info"></div>
+          <form id="profile-form">
+            <div class="field"><label>Email</label><input type="email" id="profile-email" disabled></div>
+            <div class="field"><label>Full name</label><input type="text" id="profile-name" required></div>
+            <div class="field"><label>Phone</label><input type="tel" id="profile-phone"></div>
+            <div class="field"><label>Location</label><input type="text" id="profile-location"></div>
+            <button type="submit" class="btn">Save changes</button>
+          </form>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Buy modal -->
+  <div class="modal-backdrop" id="buy-modal">
+    <div class="modal">
+      <h3 id="buy-modal-title">Buy produce</h3>
+      <form id="buy-form">
+        <input type="hidden" id="buy-product-id">
+        <p class="text-faint" id="buy-modal-sub"></p>
+        <div class="field"><label>Quantity to buy</label><input type="number" id="buy-qty" required min="0.1" step="0.1"></div>
+        <div class="flex-gap">
+          <button type="submit" class="btn">Confirm purchase</button>
+          <button type="button" class="btn btn-outline" id="buy-cancel">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Message compose modal (from a listing) -->
+  <div class="modal-backdrop" id="message-modal">
+    <div class="modal">
+      <h3 id="message-modal-title">Message farmer</h3>
+      <form id="message-form">
+        <input type="hidden" id="msg-product-id">
+        <div class="field"><label>Message</label><textarea id="msg-body" required placeholder="Ask about availability, delivery, quality…"></textarea></div>
+        <div class="flex-gap">
+          <button type="submit" class="btn">Send</button>
+          <button type="button" class="btn btn-outline" id="message-cancel">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Review modal -->
+  <div class="modal-backdrop" id="review-modal">
+    <div class="modal">
+      <h3>Leave a review</h3>
+      <form id="review-form">
+        <input type="hidden" id="rev-order-id">
+        <div class="field">
+          <label>Rating</label>
+          <div class="rating-input" id="rating-input">
+            <span class="star" data-star="1">★</span><span class="star" data-star="2">★</span>
+            <span class="star" data-star="3">★</span><span class="star" data-star="4">★</span>
+            <span class="star" data-star="5">★</span>
+          </div>
+        </div>
+        <div class="field"><label>Comment (optional)</label><textarea id="rev-comment"></textarea></div>
+        <div class="flex-gap">
+          <button type="submit" class="btn">Submit review</button>
+          <button type="button" class="btn btn-outline" id="review-cancel">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/seller.js"></script>
+  <script src="js/seller-features.js"></script>
+</body>
+</html>
